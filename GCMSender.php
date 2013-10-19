@@ -3,7 +3,7 @@
 
 	@author: 	Jan Meier
 	@eMail:		jan@2freunde.org
-	@data:		15.08.2013
+	@date:		15.08.2013
 	
 	* http://developer.android.com/google/gcm/adv.html
 	* apt-get install php5-curl
