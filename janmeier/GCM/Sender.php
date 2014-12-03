@@ -9,8 +9,9 @@
 	* apt-get install php5-curl
 */
 
+namespace janmeier\GCM;
 
-class GCMSender {
+class Sender {
 	// GCM TARGT URL
 	private $gcm_url = 'https://android.googleapis.com/gcm/send';
 	// API KEY
@@ -166,11 +167,11 @@ class GCMSender {
 
 		foreach($obj as $i => $obj) {
 			if(property_exists($obj,'message_id')) {
-				$whatToDo[$i]	=	GCMSender::$GCM_OK;
+				$whatToDo[$i]	=	Sender::$GCM_OK;
 			} elseif(property_exists($obj,'registration_id')) {
-				$whatToDo[$i]	=	GCMSender::$GCM_UPDATE;
+				$whatToDo[$i]	=	Sender::$GCM_UPDATE;
 			} elseif(property_exists($obj,'error')) {
-				$whatToDo[$i]	=	GCMSender::$GCM_ERROR;
+				$whatToDo[$i]	=	Sender::$GCM_ERROR;
 			} else {
 				print("This should not have happened.");
 			}
