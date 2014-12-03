@@ -74,8 +74,13 @@ class GCMSender {
 		$this->dry_run = $boolean;
 	}
 
+	// sends-tickle: http://developer.android.com/google/gcm/adv.html#s2s
+	function sendTickle() {
+		$this->sendMessage();
+	}
+
+	// sends message with payload http://developer.android.com/google/gcm/adv.html#payload
 	function sendMessage($data) {
-		$payload = $this->buildJSON($data);
 
 		$s = curl_init();
 		// stop echo
@@ -90,8 +95,14 @@ class GCMSender {
 				'Content-Type:application/json',
 				'Authorization:key='.$this->api_key
 			));
-		// sets payload (Json-String)
+
+		// create Json-String
+		$payload = $this->buildJSON($data);
+
+		// sets payload
 		curl_setopt($s,	CURLOPT_POSTFIELDS, $payload);
+
+
 		// sets connection timeout
 		curl_setopt($s, CURLOPT_CONNECTTIMEOUT, $this->timeout);
 		// execute the curl
@@ -103,7 +114,6 @@ class GCMSender {
 		if($this->handleHttpCode($httpCode)) {
 			$responseBodyObj = json_decode($responseBody);
 			$status = $this->handleSuccessResponse($responseBodyObj->results);
-
 		} else {
 			throw new Exception("Error! Something went wrong.");
 		}
@@ -131,8 +141,10 @@ class GCMSender {
 	}
 	private function buildJSON($data) {
 		// check if basic informations are set
-		if(empty($this->api_key) or !is_array($this->recipients) or !is_array($data)) {
+		if(empty($this->api_key) or !is_array($this->recipients)) {
 			throw new Exception("Error: api_key, recipients or data is not set.");
+		} elseif(!is_array($data) && !empty($data)) {
+			throw new InvalidArgumentException("Has to be either an Array or empty");
 		}
 		// construct request array
 		$request = array(
