@@ -1,5 +1,5 @@
 {
-    "name": "janmeier/GCMSender",
+    "name": "janmeier/gcm-sender",
     "description": "light weight library to send Google Cloud Messages (GCM) using PHP & curl.",
     "keywords": ["GCM", "Google Cloud Messaging", "Android push"],
     "homepage": "https://github.com/Jan1337z/GCM-via-PHP",
