@@ -1,6 +1,9 @@
 {
     "name": "janmeier/GCMSender",
-    "description": "light weight library to send GCM-Messages using PHP & php5-curl.",
+    "description": "light weight library to send Google Cloud Messages (GCM) using PHP & curl.",
+    "keywords": ["GCM", "Google Cloud Messaging", "Android push"],
+    "homepage": "https://github.com/Jan1337z/GCM-via-PHP",
+    "license": "MIT",
     "authors": [
         {
             "name": "Jan Meier",
