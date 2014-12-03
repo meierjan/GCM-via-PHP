@@ -9,14 +9,22 @@ Module Requirements:
 
 Usage Example
 ----
-Add it to your composer-dependencies like this:
+Just add it to your composer-file!
+
+Example composer.json file here:
 ```
-"repositories": [
+{
+    "repositories": [
     {
         "type": "vcs",
         "url": "https://github.com/Jan1337z/GCM-via-PHP"
     }
-],
+    ],
+    "require": {
+        "janmeier/GCSender": "dev-master"
+    }
+}
+
 ```
 
 more following:
