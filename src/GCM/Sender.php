@@ -35,7 +35,6 @@ class Sender {
 
 	function __construct ($api_key) {
 		$this->api_key = $api_key;
-
 	}
 
 	function setApiKey($key) {
@@ -60,7 +59,7 @@ class Sender {
 	// 0 => now or never
 	function setTimeToLive($secs) {
 		if(0 > $secs && $secs <  2419200) {
-			throw new \InvalidArgumentException('Parameter $secs should be in range 0 to 2,419,200');
+			throw new \InvalidArgumentException('Parameter $secs should be in range 0 to 2,419,200.');
 		}
 		$this->time_to_live = $secs;
 	}
@@ -116,9 +115,8 @@ class Sender {
 			$responseBodyObj = json_decode($responseBody);
 			$status = $this->handleSuccessResponse($responseBodyObj->results);
 		} else {
-			throw new \Exception("Error! Something went wrong.");
+			throw new \Exception("Error! Handling the HTTP-Code went wrong.");
 		}
-
 		return $status;
 	}
 
@@ -137,9 +135,9 @@ class Sender {
 				throw new \Exception("Error: Internal Server Error on GCM-Server.");
 				break;
 		}
-
 		return false;
 	}
+
 	private function buildJSON($data) {
 		// check if basic informations are set
 		if(empty($this->api_key) or !is_array($this->recipients)) {
@@ -156,11 +154,12 @@ class Sender {
 						"dry_run" => $this->dry_run
 			);
 		// if TTL is set by -> added it
-		if($this->time_to_live != false) {
+		if($this->time_to_live !== false) {
 			$request["time_to_live"] = $this->time_to_live;
 		}
 		return json_encode($request);
 	}
+
 	private function handleSuccessResponse($obj) {
 
 		$whatToDo = array();
