@@ -1,8 +1,8 @@
 {
-    "name": "jan1337z/GCSender",
+    "name": "janmeier/GCSender",
     "autoload": {
         "psr-0" : {
-            "jan1337z\\GCM" : "src"
+            "janmeier\\GCM" : "src"
         }
     }
 }
