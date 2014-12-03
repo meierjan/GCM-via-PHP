@@ -9,7 +9,7 @@
 	* apt-get install php5-curl
 */
 
-namespace janmeier\GCM;
+namespace GCM;
 
 class Sender {
 	// GCM TARGT URL
@@ -60,7 +60,7 @@ class Sender {
 	// 0 => now or never
 	function setTimeToLive($secs) {
 		if(0 > $secs && $secs <  2419200) {
-			throw new InvalidArgumentException('Parameter $secs should be in range 0 to 2,419,200');
+			throw new \InvalidArgumentException('Parameter $secs should be in range 0 to 2,419,200');
 		}
 		$this->time_to_live = $secs;
 	}
@@ -116,7 +116,7 @@ class Sender {
 			$responseBodyObj = json_decode($responseBody);
 			$status = $this->handleSuccessResponse($responseBodyObj->results);
 		} else {
-			throw new Exception("Error! Something went wrong.");
+			throw new \Exception("Error! Something went wrong.");
 		}
 
 		return $status;
@@ -128,13 +128,13 @@ class Sender {
 				return true;
 				break;
 			case 400:
-				throw new Exception("Error! Response-Code 400: JSON-Request could not be parst by GCM-Server.");
+				throw new \Exception("Error! Response-Code 400: JSON-Request could not be parst by GCM-Server.");
 				break;
 			case 401:
-				throw new Exception("Error! Response-Code 401: Authenticating error.");
+				throw new \Exception("Error! Response-Code 401: Authenticating error.");
 				break;
 			default:
-				throw new Exception("Error: Internal Server Error on GCM-Server.");
+				throw new \Exception("Error: Internal Server Error on GCM-Server.");
 				break;
 		}
 
@@ -143,9 +143,9 @@ class Sender {
 	private function buildJSON($data) {
 		// check if basic informations are set
 		if(empty($this->api_key) or !is_array($this->recipients)) {
-			throw new Exception("Error: api_key, recipients or data is not set.");
+			throw new \Exception("Error: api_key, recipients or data is not set.");
 		} elseif(!is_array($data) && !empty($data)) {
-			throw new InvalidArgumentException("Has to be either an Array or empty");
+			throw new \InvalidArgumentException("Has to be either an Array or empty");
 		}
 		// construct request array
 		$request = array(
