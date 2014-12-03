@@ -27,4 +27,15 @@ Example composer.json file here:
 
 ```
 
-more following:
+
+possible index.php
+```
+<?php
+    require 'vendor/autoload.php';
+    $sender = new GCM\Sender("YOUR_API_KEY");
+    $sender->setRecipients(array("a_android_client_registration_id"));
+    $sender->sendMessage(array("message" => "some_content"));
+?>
+```
+
+more following!
