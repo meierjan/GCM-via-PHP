@@ -1,5 +1,5 @@
 {
-    "name": "janmeier/GCSender",
+    "name": "janmeier/GCMSender",
     "autoload": {
         "psr-0" : {
             "janmeier\\GCM" : "src"

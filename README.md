@@ -21,7 +21,7 @@ Example composer.json file here:
     }
     ],
     "require": {
-        "janmeier/GCSender": "dev-master"
+        "janmeier/GCMSender": "dev-master"
     }
 }
 
