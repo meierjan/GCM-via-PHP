@@ -4,7 +4,7 @@
 	@author: 	Jan Meier
 	@eMail:		jan@2freunde.org
 	@date:		15.08.2013
-	
+
 	* http://developer.android.com/google/gcm/adv.html
 	* apt-get install php5-curl
 */
@@ -13,7 +13,6 @@
 class GCMSender {
 	// GCM TARGT URL
 	private $gcm_url = 'https://android.googleapis.com/gcm/send';
-
 	// API KEY
 	private $api_key;
 	// recipients
@@ -27,15 +26,15 @@ class GCMSender {
 	private $collapse_key = "DEFAULT_KEY";
 	private $time_to_live = false;
 	private $dry_run = false;
-	
+
 	// "constants"
 	public static  $GCM_ERROR	=	2;
 	public static  $GCM_UPDATE	=	1;
-	public static  $GCM_OK 	=	0;
+	public static  $GCM_OK 		=	0;
 
 	function __construct ($api_key) {
 		$this->api_key = $api_key;
-		
+
 	}
 
 	function setApiKey($key) {
@@ -59,6 +58,9 @@ class GCMSender {
 	// 0 to 2,419,200 seconds
 	// 0 => now or never
 	function setTimeToLive($secs) {
+		if(0 > $secs && $secs <  2419200) {
+			throw new InvalidArgumentException('Parameter $secs should be in range 0 to 2,419,200');
+		}
 		$this->time_to_live = $secs;
 	}
 
@@ -74,8 +76,7 @@ class GCMSender {
 
 	function sendMessage($data) {
 		$payload = $this->buildJSON($data);
-	
-	
+
 		$s = curl_init();
 		// stop echo
 		curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
@@ -96,7 +97,7 @@ class GCMSender {
 		// execute the curl
 		$responseBody = curl_exec($s);
 		$httpCode = curl_getinfo($s,CURLINFO_HTTP_CODE);
-		// close 
+		// close
 		curl_close($s);
 
 		if($this->handleHttpCode($httpCode)) {
