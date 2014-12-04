@@ -29,7 +29,7 @@ Example composer.json file here:
 
 
 possible index.php
-```
+```php
 <?php
     require 'vendor/autoload.php';
     $sender = new GCM\Sender("YOUR_API_KEY");
