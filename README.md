@@ -12,7 +12,7 @@ Usage Example
 Just add it to your composer-file!
 
 Example composer.json file here:
-```
+```json
 {
     "repositories": [
     {
