@@ -1,5 +1,8 @@
 #intellij related
 .idea/
 
+#phpdoc related
+output
+
 # mac osx related
 .DS_Store
