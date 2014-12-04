@@ -41,7 +41,7 @@ class Sender
 
     /**
      * @link http://developer.android.com/google/gcm/gs.html#access-key
-     * @param $api_key The Google-Cloud-Messaging API-Key
+     * @param String $api_key The Google-Cloud-Messaging API-Key
      */
     function __construct($api_key)
     {
@@ -51,7 +51,7 @@ class Sender
     /**
      * method to change the api_key passed to the constructor
      * @link http://developer.android.com/google/gcm/gs.html#access-key
-     * @param $key the GCM Api Key
+     * @param String $key the GCM Api Key
      */
     function setApiKey($key)
     {
@@ -73,7 +73,7 @@ class Sender
      * Sets the the registration-ids that should receive the GCM-Message
      * @link http://developer.android.com/google/gcm/notifications.html#gen-client
      * @link http://developer.android.com/google/gcm/notifications.html#add
-     * @param $recipients array $recipients an Array of registration-ids from android devices
+     * @param array $recipients an Array of registration-ids from android devices
      */
     function setRegistrationIds($recipients)
     {
@@ -109,7 +109,7 @@ class Sender
 
     /**
      * Set curl connection Timeout
-     * @param $secs seconds until timeout in set [0,inf)
+     * @param int $secs seconds until timeout in set [0,inf)
      */
     function setTimeout($secs)
     {
@@ -123,7 +123,7 @@ class Sender
     /**
      * This parameter allows developers to test a request without actually sending a message.
      * @link http://developer.android.com/google/gcm/server.html#params
-     * @param $boolean enables/disables dry-run mode
+     * @param bool $boolean enables/disables dry-run mode
      */
     function setDryrun($boolean)
     {
@@ -145,7 +145,7 @@ class Sender
     /**
      * Sends message to GCM API-Server
      * @link http://developer.android.com/google/gcm/adv.html#payload
-     * @param $data either empty string or associative-array of information that is sent to the client(s)
+     * @param array $data either empty string or associative-array of information that is sent to the client(s)
      * @return array an array of status per registration_ids/recipiants
      * @throws \Exception if handling the HTTP-Code goes wrong
      */
@@ -191,7 +191,7 @@ class Sender
     }
 
     /**
-     * @param $httpResponseCode the http-status-code returned by the Google GCM API-Server
+     * @param int $httpResponseCode the http-status-code returned by the Google GCM API-Server
      * @return bool is status  200 - Success ?
      * @throws \Exception if something went wrong (Auth-Error/Internal-Server-Error/Bad-Json)
      */
@@ -219,7 +219,7 @@ class Sender
 
     /**
      * builds the JSON-Request-String from class-attributes and parameter
-     * @param $data either empty string or associative-array of information that is sent to the client(s)
+     * @param mixed $data is either an empty string or associative-array of information that is sent to the client(s)
      * @return string a stringified JSON-Object containing api-information
      * @throws \Exception if $data is neither an array nor a an empty string OR api_key/recipients is not set
      */
@@ -247,7 +247,7 @@ class Sender
     }
 
     /**
-     * @param $obj
+     * @param array $obj
      * @return array an Array of state for each registration_id the message was sent to
      */
     private function handleSuccessResponse($obj)
