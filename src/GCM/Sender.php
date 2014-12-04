@@ -1,180 +1,271 @@
 <?php
-/*
-
-	@author: 	Jan Meier
-	@eMail:		jan@meier.wtf
-	@date:		03.12.2014
-
-	* http://developer.android.com/google/gcm/adv.html
-	* apt-get install php5-curl
-*/
+/**
+ *
+ * An implementation on the GCM Interface described here: http://developer.android.com/google/gcm/adv.html
+ * Getting Started here: http://developer.android.com/google/gcm/gs.htm
+ *
+ * Requirements: PHP Version >5, php5-curl
+ *
+ * @author:     Jan Meier <jan@meier.wtf>
+ * @date:       03.12.2014
+ * @license:    MIT https://github.com/Jan1337z/GCM-via-PHP/blob/master/LICENSE
+ * @link:       https://github.com/Jan1337z/GCM-via-PHP
+ *
+ *
+ */
 
 namespace GCM;
 
-class Sender {
-	// GCM TARGT URL
-	private $gcm_url = 'https://android.googleapis.com/gcm/send';
-	// API KEY
-	private $api_key;
-	// recipients
-	private $recipients;
-	// request timeout (in secs)
-	private $timeout=10;
+class Sender
+{
+    // GCM TARGET URL
+    private $gcm_url = 'https://android.googleapis.com/gcm/send';
+    // API KEY
+    private $api_key;
+    // recipients
+    private $recipients;
+    // request timeout (in secs)
+    private $timeout = 10;
 
 
-	// GCM settings
-	private $delay_while_idle = false;
-	private $collapse_key = "DEFAULT_KEY";
-	private $time_to_live = false;
-	private $dry_run = false;
+    // GCM settings
+    private $delay_while_idle = false;
+    private $collapse_key = "DEFAULT_KEY";
+    private $time_to_live = false;
+    private $dry_run = false;
 
-	// "constants"
-	public static  $GCM_ERROR	=	2;
-	public static  $GCM_UPDATE	=	1;
-	public static  $GCM_OK 		=	0;
+    // "constants"
+    public static $GCM_ERROR = 2;
+    public static $GCM_UPDATE = 1;
+    public static $GCM_OK = 0;
 
-	function __construct ($api_key) {
-		$this->api_key = $api_key;
-	}
+    /**
+     * @link http://developer.android.com/google/gcm/gs.html#access-key
+     * @param $api_key The Google-Cloud-Messaging API-Key
+     */
+    function __construct($api_key)
+    {
+        $this->api_key = $api_key;
+    }
 
-	function setApiKey($key) {
-		$this->api_key = $api_key;
-	}
+    /**
+     * method to change the api_key passed to the constructor
+     * @link http://developer.android.com/google/gcm/gs.html#access-key
+     * @param $key the GCM Api Key
+     */
+    function setApiKey($key)
+    {
+        $this->api_key = $key;
+    }
 
-	// set recipients: array!
-	function setRecipients($recipients) {
-		$this->recipients = $recipients;
-	}
+    /**
+     * Alias function for @see setRegistrationIds()
+     * @link http://developer.android.com/google/gcm/notifications.html#gen-client
+     * @link http://developer.android.com/google/gcm/notifications.html#add
+     * @param array $recipients an Array of registration-ids from android devices
+     */
+    function setRecipients($recipients)
+    {
+        $this->recipients = $recipients;
+    }
 
-	function setRegistrationIds($recipients) {
-		$this->setRecipients($recipients);
-	}
+    /**
+     * Sets the the registration-ids that should receive the GCM-Message
+     * @link http://developer.android.com/google/gcm/notifications.html#gen-client
+     * @link http://developer.android.com/google/gcm/notifications.html#add
+     * @param $recipients array $recipients an Array of registration-ids from android devices
+     */
+    function setRegistrationIds($recipients)
+    {
+        $this->setRecipients($recipients);
+    }
 
-	// set collapse key
-	function setCollapseKey($key) {
-		$this->collapse_key = $key;
-	}
+    /**
+     * the collapse_key flag plays a role: if there is already a message with the same collapse key (and registration ID)
+     * stored and waiting for delivery, the old message will be discarded and the new message will take its place
+     * (that is, the old message will be collapsed by the new one). However, if the collapse key is not set, both the
+     * new and old messages are stored for future delivery. Collapsible messages are also called send-to-sync messages.
+     * @link http://developer.android.com/google/gcm/server.html#params
+     * @param String $key collapse_key
+     */
+    function setCollapseKey($key)
+    {
+        $this->collapse_key = $key;
+    }
 
-	// 0 to 2,419,200 seconds
-	// 0 => now or never
-	function setTimeToLive($secs) {
-		if(0 > $secs && $secs <  2419200) {
-			throw new \InvalidArgumentException('Parameter $secs should be in range 0 to 2,419,200.');
-		}
-		$this->time_to_live = $secs;
-	}
-
-	// request timeout in seconds
-	function setTimeout($secs) {
-		$this->timeout = $secs;
-	}
-
-	// set dry run
-	function setDryrun($boolean) {
-		$this->dry_run = $boolean;
-	}
-
-	// sends-tickle: http://developer.android.com/google/gcm/adv.html#s2s
-	function sendTickle() {
-		$this->sendMessage();
-	}
-
-	// sends message with payload http://developer.android.com/google/gcm/adv.html#payload
-	function sendMessage($data) {
-
-		$s = curl_init();
-		// stop echo
-		curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
-		// set URL
-		curl_setopt($s,CURLOPT_URL,$this->gcm_url);
-		// set request mode to POST
-		curl_setopt($s,	CURLOPT_POST, true);
-		// set GCM Headers:
-		// Content-Type & Authorization
-		curl_setopt($s,	CURLOPT_HTTPHEADER, array(
-				'Content-Type:application/json',
-				'Authorization:key='.$this->api_key
-			));
-
-		// create Json-String
-		$payload = $this->buildJSON($data);
-
-		// sets payload
-		curl_setopt($s,	CURLOPT_POSTFIELDS, $payload);
+    /**
+     * This parameter specifies how long (in seconds) the message should be kept on GCM storage if the device is offline.
+     * Optional default time-to-live is 4 weeks.
+     * @param int  $secs seconds in closed set [0, 2419200]
+     */
+    function setTimeToLive($secs)
+    {
+        if (0 > $secs && $secs > 2419200) {
+            throw new \InvalidArgumentException('Parameter $secs should be in set [0,2419200]');
+        }
+        $this->time_to_live = $secs;
+    }
 
 
-		// sets connection timeout
-		curl_setopt($s, CURLOPT_CONNECTTIMEOUT, $this->timeout);
-		// execute the curl
-		$responseBody = curl_exec($s);
-		$httpCode = curl_getinfo($s,CURLINFO_HTTP_CODE);
-		// close
-		curl_close($s);
+    /**
+     * Set curl connection Timeout
+     * @param $secs seconds until timeout in set [0,inf)
+     */
+    function setTimeout($secs)
+    {
+        if (0 > $secs) {
+            throw new \InvalidArgumentException('Parameter $secs should be in set [0,inf)');
+        }
+        $this->timeout = $secs;
+    }
 
-		if($this->handleHttpCode($httpCode)) {
-			$responseBodyObj = json_decode($responseBody);
-			$status = $this->handleSuccessResponse($responseBodyObj->results);
-		} else {
-			throw new \Exception("Error! Handling the HTTP-Code went wrong.");
-		}
-		return $status;
-	}
 
-	private static function handleHttpCode($httpResponseCode) {
-		switch ($httpResponseCode) {
-			case 200:
-				return true;
-				break;
-			case 400:
-				throw new \Exception("Error! Response-Code 400: JSON-Request could not be parst by GCM-Server.");
-				break;
-			case 401:
-				throw new \Exception("Error! Response-Code 401: Authenticating error.");
-				break;
-			default:
-				throw new \Exception("Error: Internal Server Error on GCM-Server.");
-				break;
-		}
-		return false;
-	}
+    /**
+     * This parameter allows developers to test a request without actually sending a message.
+     * @link http://developer.android.com/google/gcm/server.html#params
+     * @param $boolean enables/disables dry-run mode
+     */
+    function setDryrun($boolean)
+    {
+        $this->dry_run = $boolean;
+    }
 
-	private function buildJSON($data) {
-		// check if basic informations are set
-		if(empty($this->api_key) or !is_array($this->recipients)) {
-			throw new \Exception("Error: api_key, recipients or data is not set.");
-		} elseif(!is_array($data) && !empty($data)) {
-			throw new \InvalidArgumentException("Has to be either an Array or empty");
-		}
-		// construct request array
-		$request = array(
-						"collapse_key" => $this->collapse_key,
-						"registration_ids" => $this->recipients,
-						"delay_while_idle" => $this->delay_while_idle,
-						"data" => $data,
-						"dry_run" => $this->dry_run
-			);
-		// if TTL is set by -> added it
-		if($this->time_to_live !== false) {
-			$request["time_to_live"] = $this->time_to_live;
-		}
-		return json_encode($request);
-	}
 
-	private function handleSuccessResponse($obj) {
+    /**
+     * Sends a Tickle (Send-to-sync message) to the to all recipients
+     * @link http://developer.android.com/google/gcm/adv.html#s2s
+     * @throws \Exception is there are missing information
+     */
+    function sendTickle()
+    {
+        $this->sendMessage("");
+    }
 
-		$whatToDo = array();
 
-		foreach($obj as $i => $obj) {
-			if(property_exists($obj,'message_id')) {
-				$whatToDo[$i]	=	Sender::$GCM_OK;
-			} elseif(property_exists($obj,'registration_id')) {
-				$whatToDo[$i]	=	Sender::$GCM_UPDATE;
-			} elseif(property_exists($obj,'error')) {
-				$whatToDo[$i]	=	Sender::$GCM_ERROR;
-			} else {
-				print("This should not have happened.");
-			}
-		}
-		return $whatToDo;
-	}
+    /**
+     * Sends message to GCM API-Server
+     * @link http://developer.android.com/google/gcm/adv.html#payload
+     * @param $data either empty string or associative-array of information that is sent to the client(s)
+     * @return array an array of status per registration_ids/recipiants
+     * @throws \Exception if handling the HTTP-Code goes wrong
+     */
+    function sendMessage($data)
+    {
+
+        $s = curl_init();
+        // stop echo
+        curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
+        // set URL
+        curl_setopt($s, CURLOPT_URL, $this->gcm_url);
+        // set request mode to POST
+        curl_setopt($s, CURLOPT_POST, true);
+        // set GCM Headers:
+        // Content-Type & Authorization
+        curl_setopt($s, CURLOPT_HTTPHEADER, array(
+            'Content-Type:application/json',
+            'Authorization:key=' . $this->api_key
+        ));
+
+        // create Json-String
+        $payload = $this->buildJSON($data);
+
+        // sets payload
+        curl_setopt($s, CURLOPT_POSTFIELDS, $payload);
+
+
+        // sets connection timeout
+        curl_setopt($s, CURLOPT_CONNECTTIMEOUT, $this->timeout);
+        // execute the curl
+        $responseBody = curl_exec($s);
+        $httpCode = curl_getinfo($s, CURLINFO_HTTP_CODE);
+        // close
+        curl_close($s);
+
+        if ($this->handleHttpCode($httpCode)) {
+            $responseBodyObj = json_decode($responseBody);
+            $status = $this->handleSuccessResponse($responseBodyObj->results);
+        } else {
+            throw new \Exception("Error! Handling the HTTP-Code went wrong.");
+        }
+        return $status;
+    }
+
+    /**
+     * @param $httpResponseCode the http-status-code returned by the Google GCM API-Server
+     * @return bool is status  200 - Success ?
+     * @throws \Exception if something went wrong (Auth-Error/Internal-Server-Error/Bad-Json)
+     */
+    private static function handleHttpCode($httpResponseCode)
+    {
+        switch (true) {
+            case($httpResponseCode == 200):
+                return true;
+                break;
+            case($httpResponseCode == 400):
+                throw new \Exception("Error! Response-Code 400: JSON-Request could not be parsed by GCM-Server.");
+                break;
+            case($httpResponseCode == 401):
+                throw new \Exception("Error! Response-Code 401: Authenticating error.");
+                break;
+            case(500 <= $httpResponseCode && $httpResponseCode >= 599):
+                throw new \Exception("Error! Response-Code {$httpResponseCode}:  Internal error or service temporary unavailable.");
+                break;
+            default:
+                throw new \Exception("Error: Internal Server Error on GCM-Server.");
+                break;
+        }
+        return false;
+    }
+
+    /**
+     * builds the JSON-Request-String from class-attributes and parameter
+     * @param $data either empty string or associative-array of information that is sent to the client(s)
+     * @return string a stringified JSON-Object containing api-information
+     * @throws \Exception if $data is neither an array nor a an empty string OR api_key/recipients is not set
+     */
+    private function buildJSON($data)
+    {
+        // check if basic information are set
+        if (empty($this->api_key) or !is_array($this->recipients)) {
+            throw new \Exception("Error: api_key or recipients is not set.");
+        } elseif (!is_array($data) && !empty($data)) {
+            throw new \InvalidArgumentException("Has to be either an Array or empty");
+        }
+        // construct request array
+        $request = array(
+            "collapse_key" => $this->collapse_key,
+            "registration_ids" => $this->recipients,
+            "delay_while_idle" => $this->delay_while_idle,
+            "data" => $data,
+            "dry_run" => $this->dry_run
+        );
+        // if TTL is set by -> added it
+        if ($this->time_to_live !== false) {
+            $request["time_to_live"] = $this->time_to_live;
+        }
+        return json_encode($request);
+    }
+
+    /**
+     * @param $obj
+     * @return array an Array of state for each registration_id the message was sent to
+     */
+    private function handleSuccessResponse($obj)
+    {
+
+        $whatToDo = array();
+
+        foreach ($obj as $i => $obj) {
+            if (property_exists($obj, 'message_id')) {
+                $whatToDo[$i] = Sender::$GCM_OK;
+            } elseif (property_exists($obj, 'registration_id')) {
+                $whatToDo[$i] = Sender::$GCM_UPDATE;
+            } elseif (property_exists($obj, 'error')) {
+                $whatToDo[$i] = Sender::$GCM_ERROR;
+            } else {
+                print("This should not have happened.");
+            }
+        }
+        return $whatToDo;
+    }
 }
