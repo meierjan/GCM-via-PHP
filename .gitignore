@@ -1,1 +1,5 @@
+#intellij related
+.idea/
+
+# mac osx related
 .DS_Store
