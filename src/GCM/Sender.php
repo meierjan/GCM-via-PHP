@@ -18,8 +18,6 @@ namespace GCM;
 
 class Sender
 {
-    // GCM TARGET URL
-    private $gcm_url = 'https://android.googleapis.com/gcm/send';
     // API KEY
     private $api_key;
     // recipients
@@ -34,10 +32,8 @@ class Sender
     private $time_to_live = false;
     private $dry_run = false;
 
-    // "constants"
-    public static $GCM_ERROR = 2;
-    public static $GCM_UPDATE = 1;
-    public static $GCM_OK = 0;
+    // GCM TARGET URL
+    const GCM_URL = 'https://android.googleapis.com/gcm/send';
 
     /**
      * @link http://developer.android.com/google/gcm/gs.html#access-key
@@ -160,7 +156,7 @@ class Sender
         // stop echo
         curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
         // set URL
-        curl_setopt($s, CURLOPT_URL, $this->gcm_url);
+        curl_setopt($s, CURLOPT_URL, $this::GCM_URL);
         // set request mode to POST
         curl_setopt($s, CURLOPT_POST, true);
         // set GCM Headers:
@@ -206,16 +202,16 @@ class Sender
                 return true;
                 break;
             case($httpResponseCode === 400):
-                throw new \Exception("Error! Response-Code 400: JSON-Request could not be parsed by GCM-Server.");
+                throw new GCMBadResponseCodeException("Error! Response-Code 400: JSON-Request could not be parsed by GCM-Server.");
                 break;
             case($httpResponseCode === 401):
-                throw new \Exception("Error! Response-Code 401: Authenticating error.");
+                throw new GCMBadResponseCodeException("Error! Response-Code 401: Authenticating error.");
                 break;
             case(500 <= $httpResponseCode && $httpResponseCode >= 599):
-                throw new \Exception("Error! Response-Code {$httpResponseCode}:  Internal error or service temporary unavailable.");
+                throw new GCMBadResponseCodeException("Error! Response-Code {$httpResponseCode}:  Internal error or service temporary unavailable.");
                 break;
             default:
-                throw new \Exception("Error: Internal Server Error on GCM-Server.");
+                throw new GCMBadResponseCodeException("Error: Internal Server Error on GCM-Server.");
                 break;
         }
     }
@@ -260,11 +256,11 @@ class Sender
 
         foreach ($obj as $i => $obj) {
             if (property_exists($obj, 'message_id')) {
-                $whatToDo[$i] = Sender::$GCM_OK;
+                $whatToDo[$i] = DeviceTokenStatus::OK;
             } elseif (property_exists($obj, 'registration_id')) {
-                $whatToDo[$i] = Sender::$GCM_UPDATE;
+                $whatToDo[$i] = DeviceTokenStatus::UPDATE;
             } elseif (property_exists($obj, 'error')) {
-                $whatToDo[$i] = Sender::$GCM_ERROR;
+                $whatToDo[$i] = DeviceTokenStatus::ERROR;
             } else {
                 print("This should not have happened.");
             }
