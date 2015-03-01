@@ -6,3 +6,7 @@ output
 
 # mac osx related
 .DS_Store
+
+# composer related
+vendor/
+composer.lock
