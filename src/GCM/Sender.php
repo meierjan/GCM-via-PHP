@@ -96,20 +96,23 @@ class Sender
     /**
      * This parameter specifies how long (in seconds) the message should be kept on GCM storage if the device is offline.
      * Optional default time-to-live is 4 weeks.
-     * @param int  $secs seconds in closed set [0, 2419200]
+     * @param int $secs seconds in closed set [0, 2419200]
+     * @return true if the value got set
      */
     function setTimeToLive($secs)
     {
-        if (0 > $secs && $secs > 2419200) {
+        if (0 > $secs || $secs > 2419200) {
             throw new \InvalidArgumentException('Parameter $secs should be in set [0,2419200]');
         }
         $this->time_to_live = $secs;
+        return true;
     }
 
 
     /**
      * Set curl connection Timeout
      * @param int $secs seconds until timeout in set [0,inf)
+     * @return true if the value got set
      */
     function setTimeout($secs)
     {
@@ -117,6 +120,7 @@ class Sender
             throw new \InvalidArgumentException('Parameter $secs should be in set [0,inf)');
         }
         $this->timeout = $secs;
+        return true;
     }
 
 
@@ -195,16 +199,16 @@ class Sender
      * @return bool is status  200 - Success ?
      * @throws \Exception if something went wrong (Auth-Error/Internal-Server-Error/Bad-Json)
      */
-    private static function handleHttpCode($httpResponseCode)
+    static function handleHttpCode($httpResponseCode)
     {
         switch (true) {
-            case($httpResponseCode == 200):
+            case($httpResponseCode === 200):
                 return true;
                 break;
-            case($httpResponseCode == 400):
+            case($httpResponseCode === 400):
                 throw new \Exception("Error! Response-Code 400: JSON-Request could not be parsed by GCM-Server.");
                 break;
-            case($httpResponseCode == 401):
+            case($httpResponseCode === 401):
                 throw new \Exception("Error! Response-Code 401: Authenticating error.");
                 break;
             case(500 <= $httpResponseCode && $httpResponseCode >= 599):
@@ -214,7 +218,6 @@ class Sender
                 throw new \Exception("Error: Internal Server Error on GCM-Server.");
                 break;
         }
-        return false;
     }
 
     /**
@@ -223,7 +226,7 @@ class Sender
      * @return string a stringified JSON-Object containing api-information
      * @throws \Exception if $data is neither an array nor a an empty string OR api_key/recipients is not set
      */
-    private function buildJSON($data)
+    protected function buildJSON($data)
     {
         // check if basic information are set
         if (empty($this->api_key) or !is_array($this->recipients)) {
