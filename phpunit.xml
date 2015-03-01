@@ -1,0 +1,8 @@
+<phpunit bootstrap="vendor/autoload.php">
+    <testsuites>
+        <testsuite name="GCM-Sender Suite">
+            <directory>test/GCM/</directory>
+            <file>*.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
