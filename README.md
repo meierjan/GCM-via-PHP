@@ -1,6 +1,8 @@
 GCM-via-PHP
 ===========
 
+[![Build Status](https://travis-ci.org/Jan1337z/GCM-via-PHP.svg)](https://travis-ci.org/Jan1337z/GCM-via-PHP)
+
 Send GCM Messages via PHP and handle the Result-Codes. Super lightweight!
 
 Module Requirements:
