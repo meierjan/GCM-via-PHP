@@ -4,7 +4,7 @@
  * An implementation on the GCM Interface described here: http://developer.android.com/google/gcm/adv.html
  * Getting Started here: http://developer.android.com/google/gcm/gs.htm
  *
- * Requirements: PHP Version >5, php5-curl
+ * Requirements: PHP Version >5.4, php5-curl
  *
  * @author:     Jan Meier <jan@meier.wtf>
  * @date:       03.12.2014
